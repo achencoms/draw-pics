@@ -1,0 +1,88 @@
+p {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.chat {
+    overflow-y: auto;
+    font-size: 20px;
+    height: 90%;
+    margin: 5px;
+}
+
+.chat-group {
+    position: absolute;
+    bottom: 0;
+    margin: 20px 20px;
+    border-top: black medium dotted;
+    padding-top: 20px;
+}
+
+.chat-box {
+    border: none;
+    height: 30px;
+    width: 300px;
+    font-size: 25px;
+    border-bottom: black medium solid;
+}
+
+.chat-button {
+    border:none;
+    height: 33px;
+    background-color: black;
+    color:white;
+}
+
+.sidenav {
+    height: 100%;
+    width: 400px;
+    position: fixed;  
+    z-index: 1; 
+    top: 0;
+    left: 0;
+    border-right: black medium solid;
+    overflow-x: hidden;    
+}
+
+.main {
+    margin-left: 400px;
+    font-size: 28px; 
+    height: 100%;
+    padding: 0px 10px;
+}
+
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+}
+
+.btn-group button {
+    background-color: #6699ff;
+    border: 1px solid black;
+    color: white;
+    padding: 5px 14px;
+    cursor: pointer;
+    float: left;
+}
+
+.btn-group button:not(:last-child) {
+    border-right: none;
+}
+
+.btn-group:after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.btn-group button:hover, .btn-group .selected{
+    background-color: black;
+}
+
+.drawing-tools {
+    display: none;
+}
+
+canvas {
+    cursor: url("pencil.png"), auto;
+}

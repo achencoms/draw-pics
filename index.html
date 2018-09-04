@@ -3,57 +3,37 @@
 
 <head>
   <meta charset="utf-8">
-  <style>
-    .btn-group button {
-      background-color: #6699ff;
-      border: 1px solid black;
-      color: white;
-      padding: 5px 14px;
-      cursor: pointer;
-      float: left;
-    }
-
-    .btn-group button:not(:last-child) {
-      border-right: none;
-    }
-
-    .btn-group:after {
-      content: "";
-      clear: both;
-      display: table;
-    }
-
-    .btn-group button:hover {
-      background-color: black;
-    }
-
-    .btn-group .selected {
-      background-color: black;
-    }
-
-    canvas {
-      cursor: url("pencil.png"), auto;
-    }
-  </style>
+  <link rel="stylesheet" href="index.css">
   <title>
     Drawing Squad
   </title>
 </head>
 
 <body>
+  <div class="sidenav">
+    <div class="chat">
+    </div>
 
-  <canvas id="main" width="800" height="800" style="border: 1px solid black">
-  </canvas>
-  <br>
-  <label for="radius">Pencil Thickness</label>
-  <input type="range" id="radius" min="1" max="5" value="3" class="slider">
-  <br>
-  <div class="btn-group">
-    <button id="clear">Clear</button>
-    <button id="undo" class="do">Undo</button>
-    <button id="redo" class="do">Redo</button>
-    <button id="pencil" class="option selected">Pencil</button>
-    <button id="eraser" class="option">Eraser</button>
+    <form class="chat-group">
+      <input type="text" class="chat-box" name="chat" placeholder="Enter your answer here..." autocomplete="off">
+      <input type="submit" class="chat-button" value="Submit">
+    </form>
+  </div>
+
+  <div class="main">
+      <canvas id="main" width="1400" height="860" style="border: 1px solid black"></canvas>
+      <div class="drawing-tools">
+        <label for="radius">Pencil Thickness</label>
+        <input type="range" id="radius" min="1" max="5" value="3" class="slider">
+        <div class="btn-group">
+          <button id="clear">Clear</button>
+          <button id="undo" class="do">Undo</button>
+          <button id="redo" class="do">Redo</button>
+          <button id="pencil" class="option selected">Pencil</button>
+          <button id="eraser" class="option">Eraser</button>
+        </div>
+      </div>
+      
   </div>
 
   <script src="/socket.io/socket.io.js"></script>

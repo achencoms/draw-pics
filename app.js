@@ -20,18 +20,20 @@ io.on("connection", function(socket) {
   console.log("a user has connected!");
 
   //Upon connecting, a new socket will be able to see what was already drawn
-  socket.emit("undo", currDrawing[currStep]);
-  /*if (currDrawing.length) {
-    for (let i = 0; i < currDrawing.length; i++) {
-      socket.emit("draw", currDrawing[i]);
-    }
-  }
+  socket.emit("redraw", currDrawing[currStep]);
 
-  if (currErasing.length) {
-    for (let i = 0; i < currErasing.length; i++) {
-      socket.emit("eraser", currErasing[i]);
+  //Checking if the game has enough users to begin the game
+  io.sockets.clients((error,clients) => {
+    if(clients.length > 3){
+      const randClient = clients[Math.floor(Math.random() * clients.length)];
+      io.to(randClient).emit("chosen","You have been chosen!");
     }
-  }*/
+  });
+
+  //Receiving user's answers and directing them to all users
+  socket.on("answer", function(data){
+    io.emit("message", data);
+  });
 
   //Drawing data is broadcast to all connected sockets
   socket.on("drawData", function(data) {

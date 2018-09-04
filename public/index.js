@@ -1,25 +1,42 @@
 $(document).ready(function() {
   const socket = io();
   const curr = {
-    tool: "pencil"
+    tool: "pencil",
+    isChosen: false
   };
 
+  //Listens for any new drawing data
   socket.on("draw", function(data) {
     drawLine(data);
   });
 
+  //removes all the previous and existing states of the canvas in the server
   socket.on("clear", function() {
     clearCanvas();
   });
 
+  //Listens for any new erased data
   socket.on("eraser", function(data) {
     erase(data);
   });
 
+  //Listens for any calls to redraw the canvas, used to redo and undo
   socket.on("redraw", function(data) {
     redraw(data);
   });
 
+  //Receives the emitted message from the server
+  socket.on("message", function(data){
+    $(".chat").append(`<p>${data}</p>`);
+  });
+
+  //Used to notify the user that he or she has been chosen to draw
+  socket.on("chosen", function(data){
+    curr.isChosen = true;
+    console.log(data);
+  });
+
+  //keeping track of canvas and whether or not the user is currently drawing
   const c = document.getElementById("main");
   const ctx = c.getContext("2d");
   let isMouseDown = false;
@@ -32,6 +49,7 @@ $(document).ready(function() {
     };
   }
 
+  //Draws based position parameters and pencil confirguration
   function drawLine({ x1, y1, x2, y2, width }) {
     ctx.beginPath();
     ctx.moveTo(x1, y1);
@@ -41,6 +59,7 @@ $(document).ready(function() {
     ctx.stroke();
   }
 
+  //Forces the canvas to draw over itself with an image (memory intensive compared to redrawing a saved state of instruction set, but much smoother)
   function redraw(data) {
     let lastDraw = new Image();
     lastDraw.src = data;
@@ -50,14 +69,17 @@ $(document).ready(function() {
     };
   }
 
+  //Erases the canvas at the position of the cursor
   function erase(data) {
     ctx.clearRect(data.x + 13, data.y + 4, 20, 39);
   }
 
+  //Clears the canvas
   function clearCanvas() {
     ctx.clearRect(0, 0, c.width, c.height);
   }
-
+  
+  //Allows the user to edit the canvas depending on whether or not the mouse button is down
   c.addEventListener("mousedown", function(evt) {
     isMouseDown = true;
     const pos = getMousePos(c, evt);
@@ -68,12 +90,14 @@ $(document).ready(function() {
     }
   });
 
+  //Upon release of the mouse button, the current state of the canvas is saved for undo/redo.
   c.addEventListener("mouseup", function(evt) {
     isMouseDown = false;
     currentDrawing = c.toDataURL();
     socket.emit("saveDrawing", currentDrawing);
   });
 
+  //Gathers positional information about the cursor
   c.addEventListener("mousemove", function(evt) {
     if (isMouseDown) {
       const pos = getMousePos(c, evt);
@@ -96,6 +120,16 @@ $(document).ready(function() {
     }
   });
 
+
+  //Submits the current value in the textbox and clears it
+  $(".chat-button").on("click",function(evt){
+    evt.preventDefault();
+    const chatBox = $(".chat-box");
+    socket.emit("answer",chatBox.val());
+    chatBox.val("");
+  });
+
+  //Calls upon clearCanvas() and clears the entirety of the save states
   $("#clear").on("click", function() {
     socket.emit("clear");
   });
