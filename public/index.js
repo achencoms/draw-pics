@@ -25,15 +25,24 @@ $(document).ready(function() {
     redraw(data);
   });
 
-  //Receives the emitted message from the server
-  socket.on("message", function(data){
-    $(".chat").append(`<p>${data}</p>`);
+  //Resets the ui to reflect a user answering
+  socket.on("reset", function(){
+    $(".drawing-tools").hide();
+    $("canvas").css("cursor","default");
+    curr.isChosen = false;
   });
 
   //Used to notify the user that he or she has been chosen to draw
   socket.on("chosen", function(data){
+    $(".drawing-tools").show();
+    $("canvas").css("cursor","url(pencil.png), auto");
     curr.isChosen = true;
     console.log(data);
+  });
+
+   //Receives the emitted message from the server
+   socket.on("message", function(data){
+    $(".chat").append(`<p>${data}</p>`);
   });
 
   //keeping track of canvas and whether or not the user is currently drawing
@@ -78,23 +87,27 @@ $(document).ready(function() {
   function clearCanvas() {
     ctx.clearRect(0, 0, c.width, c.height);
   }
-  
+
   //Allows the user to edit the canvas depending on whether or not the mouse button is down
   c.addEventListener("mousedown", function(evt) {
-    isMouseDown = true;
-    const pos = getMousePos(c, evt);
-    curr.x = pos.x;
-    curr.y = pos.y;
-    if (curr.tool == "eraser") {
-      ctx.clearRect(pos.x + 13, pos.y + 4, 20, 39);
+    if(curr.isChosen){
+      isMouseDown = true;
+      const pos = getMousePos(c, evt);
+      curr.x = pos.x;
+      curr.y = pos.y;
+      if (curr.tool == "eraser") {
+        ctx.clearRect(pos.x + 13, pos.y + 4, 20, 39);
+      }
     }
   });
 
   //Upon release of the mouse button, the current state of the canvas is saved for undo/redo.
   c.addEventListener("mouseup", function(evt) {
-    isMouseDown = false;
-    currentDrawing = c.toDataURL();
-    socket.emit("saveDrawing", currentDrawing);
+    if(curr.isChosen){
+      isMouseDown = false;
+      currentDrawing = c.toDataURL();
+      socket.emit("saveDrawing", currentDrawing);
+    }
   });
 
   //Gathers positional information about the cursor
@@ -119,7 +132,6 @@ $(document).ready(function() {
       }
     }
   });
-
 
   //Submits the current value in the textbox and clears it
   $(".chat-button").on("click",function(evt){

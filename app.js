@@ -20,11 +20,12 @@ io.on("connection", function(socket) {
   console.log("a user has connected!");
 
   //Upon connecting, a new socket will be able to see what was already drawn
-  socket.emit("redraw", currDrawing[currStep]);
+  if(currDrawing.length) socket.emit("redraw", currDrawing[currStep]);
 
   //Checking if the game has enough users to begin the game
   io.sockets.clients((error,clients) => {
-    if(clients.length > 3){
+    if(clients.length > 1){
+      io.emit("reset");
       const randClient = clients[Math.floor(Math.random() * clients.length)];
       io.to(randClient).emit("chosen","You have been chosen!");
     }
