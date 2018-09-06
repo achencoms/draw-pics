@@ -27,6 +27,7 @@ $(document).ready(function() {
 
   //Resets the ui to reflect a user answering
   socket.on("reset", function(){
+    $("#word").empty();
     $(".drawing-tools").hide();
     $("canvas").css("cursor","default");
     curr.isChosen = false;
@@ -34,14 +35,21 @@ $(document).ready(function() {
 
   //Used to notify the user that he or she has been chosen to draw
   socket.on("chosen", function(data){
+    $(".wordReveal").text(`Current Word: ${data}`);
     $(".drawing-tools").show();
     $("canvas").css("cursor","url(pencil.png), auto");
     curr.isChosen = true;
-    console.log(data);
   });
 
-   //Receives the emitted message from the server
-   socket.on("message", function(data){
+  //Players will receive the current state of the word to display on the screen
+  socket.on("word",function(data){
+    if(!curr.isChosen){
+      setupWord(data);
+    }
+  });
+
+  //Receives the emitted message from the server
+  socket.on("message", function(data){
     $(".chat").append(`<p>${data}</p>`);
   });
 
@@ -88,6 +96,15 @@ $(document).ready(function() {
     ctx.clearRect(0, 0, c.width, c.height);
   }
 
+  //Setup for the game, specifically the word
+  function setupWord(letters){
+    $("#word").empty();
+    for(let i = 0 ; i < letters.length; i++){
+      let newEmpty = $("<input>",{"type": "text", "class" : "letter", "value" : letters[i], "disabled" : "disabled", "maxLength" : "1"});
+      $("#word").append(newEmpty);
+    }    
+  }
+
   //Allows the user to edit the canvas depending on whether or not the mouse button is down
   c.addEventListener("mousedown", function(evt) {
     if(curr.isChosen){
@@ -112,25 +129,26 @@ $(document).ready(function() {
 
   //Gathers positional information about the cursor
   c.addEventListener("mousemove", function(evt) {
-    if (isMouseDown) {
-      const pos = getMousePos(c, evt);
-      if (curr.tool == "pencil") {
-        const x = pos.x;
-        const y = pos.y;
-        const data = {
-          x1: curr.x,
-          y1: curr.y,
-          x2: x,
-          y2: y,
-          width: $("#radius").val()
-        };
-        socket.emit("drawData", data);
-        curr.x = x;
-        curr.y = y;
-      } else {
-        socket.emit("eraser", pos);
-      }
+    if(curr.isChosen && isMouseDown){
+        const pos = getMousePos(c, evt);
+        if (curr.tool == "pencil") {
+          const x = pos.x;
+          const y = pos.y;
+          const data = {
+            x1: curr.x,
+            y1: curr.y,
+            x2: x,
+            y2: y,
+            width: $("#radius").val()
+          };
+          socket.emit("drawData", data);
+          curr.x = x;
+          curr.y = y;
+        } else {
+          socket.emit("eraser", pos);
+        }
     }
+    
   });
 
   //Submits the current value in the textbox and clears it

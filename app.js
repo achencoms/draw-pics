@@ -1,3 +1,4 @@
+const fs = require('fs');
 const express = require("express");
 const app = express();
 const http = require("http").Server(app);
@@ -6,9 +7,15 @@ const io = require("socket.io")(http);
 //Having a dynamic port to allow for Heroku or another hosting service to choose custom port
 const port = process.env.PORT || 3000;
 
-//Keeps track of the current drawing
+//Keeps track of the current drawing and current state of the game
 let currDrawing = [];
 let currStep = -1;
+let currLetters = [];
+let chosenWord = "";
+let chosenUser = "";
+let globalTimer, timer;
+
+const words = fs.readFileSync("words.txt","utf-8").split("\n").filter(word => word.length > 3);
 
 app.use(express.static("public"));
 
@@ -22,17 +29,14 @@ io.on("connection", function(socket) {
   //Upon connecting, a new socket will be able to see what was already drawn
   if(currDrawing.length) socket.emit("redraw", currDrawing[currStep]);
 
-  //Checking if the game has enough users to begin the game
-  io.sockets.clients((error,clients) => {
-    if(clients.length > 1){
-      io.emit("reset");
-      const randClient = clients[Math.floor(Math.random() * clients.length)];
-      io.to(randClient).emit("chosen","You have been chosen!");
-    }
-  });
+  setup();
 
   //Receiving user's answers and directing them to all users
   socket.on("answer", function(data){
+    if(data === chosenWord){
+      clearInterval(globalTimer);
+      setup();
+    }
     io.emit("message", data);
   });
 
@@ -84,3 +88,53 @@ io.on("connection", function(socket) {
 http.listen(port, function() {
   console.log(`Listening to port ${port}`);
 });
+
+//Helper Functions
+function randChoice(array){
+  let randChoice = array[Math.floor(Math.random() * array.length)];
+  if(array === words){
+    currLetters = [];
+    while(randChoice === chosenWord){
+      randChoice = array[Math.floor(Math.random() * array.length)];
+    }
+    chosenWord = randChoice;
+    currLetters = Array(chosenWord.length).fill("");
+  } else{
+    while(randChoice === chosenUser){
+      randChoice = array[Math.floor(Math.random() * array.length)];
+    }
+    chosenUser = randChoice;
+  }
+  return randChoice;
+}
+
+function randLetter(){
+  let randIndex = Math.floor(Math.random() * chosenWord.length);
+  while(currLetters[randIndex] != ""){
+    randIndex = Math.floor(Math.random() * chosenWord.length);
+  }
+  currLetters[randIndex] = chosenWord.charAt(randIndex);
+}
+
+function setup(){
+  io.sockets.clients((error,clients) => {
+     //Checking if the game has enough users to begin the game
+    if(clients.length > 1){
+      io.emit("reset");
+      io.to(randChoice(clients)).emit("chosen",randChoice(words));
+      io.emit("word",currLetters);
+      
+      //Setup the timer to give letters until there are only 2 missing
+      timer = setInterval(function(){
+        randLetter();
+        io.emit("word",currLetters);
+      }, 4000);
+  
+      //Setup global timer for the game
+      globalTimer = setInterval(function(){
+        clearInterval(timer);
+        setup();
+      },10000);
+    }
+  });
+}

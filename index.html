@@ -21,19 +21,23 @@
   </div>
 
   <div class="main">
-      <canvas id="main" width="1400" height="860" style="border: 1px solid black"></canvas>
-      <div class="drawing-tools">
-        <label for="radius">Pencil Thickness</label>
-        <input type="range" id="radius" min="1" max="5" value="3" class="slider">
-        <div class="btn-group">
-          <button id="clear">Clear</button>
-          <button id="undo" class="do">Undo</button>
-          <button id="redo" class="do">Redo</button>
-          <button id="pencil" class="option selected">Pencil</button>
-          <button id="eraser" class="option">Eraser</button>
-        </div>
+      <canvas id="main" width="1400" height="800" style="border: 1px solid black"></canvas>
+  </div>
+
+  <div class="tools">
+    <div id="word"></div>
+    <div class="drawing-tools">
+      <p class="wordReveal"></p>
+      <label for="radius">Pencil Thickness</label>
+      <input type="range" id="radius" min="1" max="5" value="3" class="slider">
+      <div class="btn-group">
+        <button id="clear">Clear</button>
+        <button id="undo" class="do">Undo</button>
+        <button id="redo" class="do">Redo</button>
+        <button id="pencil" class="option selected">Pencil</button>
+        <button id="eraser" class="option">Eraser</button>
       </div>
-      
+    </div>  
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
