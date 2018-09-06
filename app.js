@@ -14,6 +14,7 @@ let currLetters = [];
 let chosenWord = "";
 let chosenUser = "";
 let globalTimer, timer;
+let gameStarted = false;
 
 const words = fs.readFileSync("words.txt","utf-8").split("\n").filter(word => word.length > 3);
 
@@ -29,8 +30,9 @@ io.on("connection", function(socket) {
   //Upon connecting, a new socket will be able to see what was already drawn
   if(currDrawing.length) socket.emit("redraw", currDrawing[currStep]);
 
-  setup();
-
+  if(!gameStarted){
+    setup();
+  }
   //Receiving user's answers and directing them to all users
   socket.on("answer", function(data){
     if(data === chosenWord){
@@ -97,7 +99,7 @@ function randChoice(array){
     while(randChoice === chosenWord){
       randChoice = array[Math.floor(Math.random() * array.length)];
     }
-    chosenWord = randChoice;
+    chosenWord = randChoice.trim();
     currLetters = Array(chosenWord.length).fill("");
   } else{
     while(randChoice === chosenUser){
@@ -120,6 +122,7 @@ function setup(){
   io.sockets.clients((error,clients) => {
      //Checking if the game has enough users to begin the game
     if(clients.length > 1){
+      gameStarted = !gameStarted;
       io.emit("reset");
       io.to(randChoice(clients)).emit("chosen",randChoice(words));
       io.emit("word",currLetters);
@@ -128,13 +131,13 @@ function setup(){
       timer = setInterval(function(){
         randLetter();
         io.emit("word",currLetters);
-      }, 4000);
+      }, 60000 / (chosenWord.length - 2));
   
       //Setup global timer for the game
       globalTimer = setInterval(function(){
         clearInterval(timer);
         setup();
-      },10000);
+      },70000);
     }
   });
 }
