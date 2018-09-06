@@ -39,7 +39,7 @@ p {
 
 .sidenav {
     height: 100%;
-    width: 400px;
+    width: 21vw;
     position: fixed;  
     z-index: 1; 
     top: 0;
@@ -49,17 +49,22 @@ p {
 }
 
 .main {
-    margin-left: 400px;
-    font-size: 28px; 
-    height: 100%;
+    margin-left: 21vw;
+    font-size: 28px;
     border-bottom: black medium solid;
 }
 
 .tools{
-    margin-left: 400px;
+    margin-left: 22vw;
+    margin-top: 2vh;
+    width: 75vw;
+    display: inline-block;
+}
+
+#word{
     vertical-align: middle;
     text-align: center;
-    line-height: 90px;
+    line-height: 130px;
 }
 
 @media screen and (max-height: 450px) {
@@ -71,9 +76,12 @@ p {
     background-color: #6699ff;
     border: 1px solid black;
     color: white;
+    font-size: 35px;
     padding: 5px 14px;
     cursor: pointer;
     float: left;
+    height: 15vh;
+    width: 15vh;
 }
 
 .btn-group button:not(:last-child) {
@@ -94,12 +102,17 @@ p {
     display: none;
 }
 
+.misc{
+    font-size: 40px;
+    margin-left: 30px;
+}
+
 .letter {
     border: none;
     width: 1em;
     text-align: center;
     text-transform: uppercase;
-    font-size: 30px;
+    font-size: 40px;
     margin-left: 5px;
 }
 

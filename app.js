@@ -14,7 +14,7 @@ let currLetters = [];
 let chosenWord = "";
 let chosenUser = "";
 let globalTimer, timer;
-let gameStarted = false;
+let notStarted = true;
 
 const words = fs.readFileSync("words.txt","utf-8").split("\n").filter(word => word.length > 3);
 
@@ -30,9 +30,10 @@ io.on("connection", function(socket) {
   //Upon connecting, a new socket will be able to see what was already drawn
   if(currDrawing.length) socket.emit("redraw", currDrawing[currStep]);
 
-  if(!gameStarted){
+  if(notStarted){
     setup();
   }
+
   //Receiving user's answers and directing them to all users
   socket.on("answer", function(data){
     if(data === chosenWord){
@@ -79,12 +80,19 @@ io.on("connection", function(socket) {
     }
   });
 
+  //Redoes from whatever the current state of the image is
   socket.on("redo", function() {
     if (currStep < currDrawing.length - 1) {
       currStep++;
       io.emit("redraw", currDrawing[currStep]);
     }
   });
+
+  //Resets the game to allow for the new connected sockets to join
+  socket.on("reset", function(){
+    setup();
+  });
+
 });
 
 http.listen(port, function() {
@@ -122,7 +130,7 @@ function setup(){
   io.sockets.clients((error,clients) => {
      //Checking if the game has enough users to begin the game
     if(clients.length > 1){
-      gameStarted = !gameStarted;
+      notStarted = false;
       io.emit("reset");
       io.to(randChoice(clients)).emit("chosen",randChoice(words));
       io.emit("word",currLetters);
@@ -136,8 +144,9 @@ function setup(){
       //Setup global timer for the game
       globalTimer = setInterval(function(){
         clearInterval(timer);
+        clearInterval(globalTimer);
         setup();
-      },70000);
+      },60000 + 10000 / (chosenWord.length));
     }
   });
 }

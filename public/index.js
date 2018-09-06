@@ -27,6 +27,7 @@ $(document).ready(function() {
 
   //Resets the ui to reflect a user answering
   socket.on("reset", function(){
+    clearCanvas();
     $("#word").empty();
     $(".drawing-tools").hide();
     $("canvas").css("cursor","default");
@@ -36,7 +37,7 @@ $(document).ready(function() {
   //Used to notify the user that he or she has been chosen to draw
   socket.on("chosen", function(data){
     $(".wordReveal").text(`Current Word: ${data}`);
-    $(".drawing-tools").show();
+    $(".drawing-tools").css("display","flex");
     $("canvas").css("cursor","url(pencil.png), auto");
     curr.isChosen = true;
   });
@@ -168,6 +169,10 @@ $(document).ready(function() {
   $(".do").on("click", function() {
     const id = $(this).attr("id");
     socket.emit(id);
+  });
+
+  $(".reset").on("click", function(){
+    socket.emit("reset");
   });
 
   //Configures which tool the user wishes to use
