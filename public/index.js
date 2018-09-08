@@ -2,7 +2,8 @@ $(document).ready(function() {
   const socket = io();
   const curr = {
     tool: "pencil",
-    isChosen: false
+    isChosen: false,
+    color: "black"
   };
 
   //Listens for any new drawing data
@@ -27,8 +28,11 @@ $(document).ready(function() {
 
   //Resets the ui to reflect a user answering
   socket.on("reset", function(){
-    clearCanvas();
+    socket.emit("clear");
+    $(".timer").fadeOut();
+    $(".chat").empty();
     $("#word").empty();
+    $(".chat-group").hide();
     $(".drawing-tools").hide();
     $("canvas").css("cursor","default");
     curr.isChosen = false;
@@ -36,6 +40,7 @@ $(document).ready(function() {
 
   //Used to notify the user that he or she has been chosen to draw
   socket.on("chosen", function(data){
+    $(".chat-group").hide();
     $(".wordReveal").text(`Current Word: ${data}`);
     $(".drawing-tools").css("display","flex");
     $("canvas").css("cursor","url(pencil.png), auto");
@@ -44,14 +49,34 @@ $(document).ready(function() {
 
   //Players will receive the current state of the word to display on the screen
   socket.on("word",function(data){
+    $(".timer").fadeIn();
     if(!curr.isChosen){
+      $(".chat-group").show();
       setupWord(data);
     }
   });
 
+  //Receiving the current round time
+  socket.on("time", function(data){
+    if(data === 0 ) $(".timer").fadeOut();
+    $(".timer").text(data);
+  });
+
+  //Disable the ability to answer any further
+  socket.on("correct", function(data){
+    $(".chat-group").hide();
+  });
+
   //Receives the emitted message from the server
   socket.on("message", function(data){
-    $(".chat").append(`<p>${data}</p>`);
+    let output = `<p><b>${data.msg}</b></p>`;
+    if(data.name){
+      output = `<p><b style='background-color:black; border-radius: 10%; color: white'>${data.name}</b>: ${data.msg}</p>`;
+    }
+    $(".chat").append(output);
+    $(".chat").animate({
+      scrollTop: $(document).height()
+    }, 400)
   });
 
   //keeping track of canvas and whether or not the user is currently drawing
@@ -68,11 +93,11 @@ $(document).ready(function() {
   }
 
   //Draws based position parameters and pencil confirguration
-  function drawLine({ x1, y1, x2, y2, width }) {
+  function drawLine({ x1, y1, x2, y2, width, color}) {
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
-    ctx.strokeStyle = curr.color;
+    ctx.strokeStyle = color;
     ctx.lineWidth = width;
     ctx.stroke();
   }
@@ -140,7 +165,8 @@ $(document).ready(function() {
             y1: curr.y,
             x2: x,
             y2: y,
-            width: $("#radius").val()
+            width: $("#radius").val(),
+            color: curr.color
           };
           socket.emit("drawData", data);
           curr.x = x;
@@ -152,12 +178,25 @@ $(document).ready(function() {
     
   });
 
-  //Submits the current value in the textbox and clears it
-  $(".chat-button").on("click",function(evt){
+  //Submits the name that the user chooses
+  $("#name-sub").on("click",function(evt){
     evt.preventDefault();
-    const chatBox = $(".chat-box");
-    socket.emit("answer",chatBox.val());
-    chatBox.val("");
+    const name = $("#name-box").val();
+    //Check if the name isn't empty
+    if(name.trim() != ""){
+       //Save the name for later use in server to keep track of points
+      socket.emit("name",name);
+      $(".name").hide();
+      $(".game").show();
+    }
+  });
+
+  //Submits the current value in the textbox and clears it
+  $("#answer-sub").on("click",function(evt){
+    evt.preventDefault();
+    const ans = $("#answer");
+    socket.emit("answer",ans.val());
+    ans.val("");
   });
 
   //Calls upon clearCanvas() and clears the entirety of the save states
@@ -171,8 +210,15 @@ $(document).ready(function() {
     socket.emit(id);
   });
 
+  //Allows the drawer to reset the game so that he or she cans skip turn
   $(".reset").on("click", function(){
     socket.emit("reset");
+  });
+
+  //Chooses color based on which color block is clicked
+  $(".colors-item").on("click",function(){
+    const color = $(this).css("background-color");
+    curr.color = color;
   });
 
   //Configures which tool the user wishes to use
