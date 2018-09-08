@@ -1,0 +1,176 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+p {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.game{
+    display:none;
+}
+
+.chat {
+    overflow-y: auto;
+    font-size: 20px;
+    height: 90%;
+    word-wrap: break-word;
+    margin: 5px;
+    border-bottom: black medium dotted;
+}
+
+.chat-group {
+    position: absolute;
+    bottom: 0;
+    margin: 20px 20px;
+    padding-top: 20px;
+}
+
+.chat-box {
+    border: none;
+    height: 30px;
+    width: 300px;
+    font-size: 25px;
+    border-bottom: black medium solid;
+}
+
+.chat-button {
+    border:none;
+    height: 33px;
+    background-color: black;
+    color:white;
+}
+
+.sidenav {
+    height: 100%;
+    width: 21vw;
+    position: fixed;  
+    z-index: 1; 
+    top: 0;
+    left: 0;
+    border-right: black medium solid;
+    overflow-x: hidden;    
+}
+
+.main {
+    position: relative;
+    z-index: 1;
+    margin-left: 21vw;
+    font-size: 28px;
+    border-bottom: black medium solid;
+}
+
+.tools{
+    margin-left: 22vw;
+    margin-top: 2vh;
+    width: 75vw;
+    display: inline-block;
+}
+
+#word{
+    vertical-align: middle;
+    text-align: center;
+    line-height: 130px;
+}
+
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+}
+
+.btn-group button {
+    background-color: #6699ff;
+    border: 1px solid black;
+    color: white;
+    font-size: 35px;
+    padding: 5px 14px;
+    cursor: pointer;
+    float: left;
+    height: 15vh;
+    width: 15vh;
+}
+
+.btn-group button:not(:last-child) {
+    border-right: none;
+}
+
+.btn-group:after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.btn-group button:hover, .btn-group .selected{
+    background-color: black;
+}
+
+.drawing-tools {
+    display: none;
+}
+
+.misc {
+    font-size: 30px;
+    margin-left: 30px;
+}
+
+.letter {
+    border: none;
+    background-color:white;
+    width: 1em;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 40px;
+    margin-left: 5px;
+}
+
+.letter[value=''] {
+    border-bottom: black 3px solid;
+    padding-bottom: 2px;
+}
+
+.colors {
+    display: grid;
+    grid-template-columns: 40px 40px 40px 40px;
+    grid-template-rows: 40px 40px;
+    margin-left: 30px;
+}
+
+.colors-item {
+    padding: 20px;
+    border: 1px solid black;
+}
+
+canvas {
+    /*cursor: url("pencil.png"), auto;*/
+}
+
+.name {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.timer {
+    display: none;
+    position: absolute;
+    background-color: red;
+    padding: 6px;
+    border-radius: 50%;
+    color:white;
+    left: 5px;
+    top: 5px;
+    z-index: 2;
+    user-select: none;
+}
+
+.chat-box:hover{
+    animation: move .1s linear 0s ;
+    animation-fill-mode: forwards;
+}
+
+@keyframes move{
+    0% {padding-bottom: 0;}
+    100% {padding-bottom: 10px;}
+}
