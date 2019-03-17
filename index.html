@@ -1,75 +1,132 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="index.css" />
+    <title>
+      Draw Pics
+    </title>
+  </head>
 
-<head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="index.css">
-  <title>
-    Drawing Squad
-  </title>
-</head>
-
-<body>
-  <form class="name">
-      <input type="text" name="name" id="name-box" class="chat-box" placeholder="Enter your name.." autocomplete="off">
-      <input type="submit" value="Submit" id="name-sub" class="chat-button">
-  </form>
-
-  <div class="game">
-    <div class="sidenav">
-        <div class="chat">
+  <body>
+    <div class="welcome">
+      <div class="box">
+        <div class="item" id="title">
+          <a class="letter">D</a>
+          <a class="letter">r</a>
+          <a class="letter">a</a>
+          <a class="letter">w</a>
+          <a class="letter">P</a>
+          <a class="letter">i</a>
+          <a class="letter">c</a>
+          <a class="letter">s</a>
         </div>
-    
-        <form class="chat-group">
-          <input type="text" id="answer" class="chat-box" name="chat" placeholder="Enter your answer here..." autocomplete="off">
-          <input type="submit" id="answer-sub" class="chat-button" value="Submit">
+        <form class="item">
+          <input
+            type="text"
+            name="name"
+            id="name-box"
+            class="chat-box"
+            placeholder="Enter your name.."
+            autocomplete="off"
+          />
+          <input
+            type="submit"
+            value="Submit"
+            id="name-sub"
+            class="chat-button"
+          />
         </form>
       </div>
-    
-      <div class="main">
-          <div class="timer"></div> 
-          <canvas id="main" width="1500" height="750" style="border: 1px solid black"></canvas>
+    </div>
+
+    <div class="game">
+      <div class="sidenav">
+        <div class="chat"></div>
+
+        <form class="chat-group">
+          <input
+            type="text"
+            id="answer"
+            class="chat-box"
+            name="chat"
+            placeholder="Enter your answer here..."
+            autocomplete="off"
+          />
+          <input
+            type="submit"
+            id="answer-sub"
+            class="chat-button"
+            value="Submit"
+          />
+        </form>
       </div>
-    
+
+      <div class="main">
+        <div class="timer"></div>
+        <canvas
+          id="main"
+          width="1500"
+          height="750"
+          style="border: 1px solid black"
+        ></canvas>
+      </div>
+
       <div class="tools">
         <div class="drawing-tools">
-          
           <div class="btn-group">
-            <button id="reset" class="reset">Reset</button>
-            <button id="clear">Clear</button>
-            <button id="undo" class="do">Undo</button>
-            <button id="redo" class="do">Redo</button>
-            <button id="pencil" class="option selected">Pencil</button>
-            <button id="eraser" class="option">Eraser</button>
+            <button id="reset" class="reset"><img src="reset.png" /></button>
+            <button id="clear"><img src="clear.png" /></button>
+            <button id="undo" class="do"><img src="undo.png" /></button>
+            <button id="redo" class="do"><img src="redo.png" /></button>
+            <button id="pencil" class="option selected">
+              <img src="pencil.png" />
+            </button>
+            <button id="eraser" class="option"><img src="eraser.png" /></button>
           </div>
-    
+
           <div class="colors">
-            <div class="colors-item" style="background-color:black"></div>
+            <div
+              class="colors-item colors-item-selected"
+              style="background-color:black"
+            ></div>
             <div class="colors-item" style="background-color:pink"></div>
             <div class="colors-item" style="background-color:red"></div>
-            <div class="colors-item" style="background-color:blue"></div>
+            <div
+              class="colors-item"
+              style="background-color:lightskyblue"
+            ></div>
             <div class="colors-item" style="background-color:yellow"></div>
             <div class="colors-item" style="background-color:lime"></div>
             <div class="colors-item" style="background-color:orange"></div>
-            <div class="colors-item" style="background-color:magenta  "></div>
+            <div
+              class="colors-item"
+              style="background-color:blueviolet  "
+            ></div>
+            <div class="colors-item" style="background-color:brown "></div>
+            <div class="colors-item" style="background-color:blue"></div>
           </div>
-    
+
           <div class="misc">
             <p class="wordReveal"></p>
             <label for="radius">Pencil Thickness</label>
-            <input type="range" id="radius" min="1" max="5" value="3" class="slider">
+            <input
+              type="range"
+              id="radius"
+              min="1"
+              max="3"
+              value="2"
+              class="slider"
+            />
           </div>
-    
-        </div>  
-    
+        </div>
+
         <div id="word"></div>
       </div>
-  </div>
-  
+    </div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-  <script src="index.js"></script>
-</body>
-
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="index.js"></script>
+  </body>
 </html>
